@@ -1,0 +1,18 @@
+.form__input-error {
+    color: #f00;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    visibility: hidden;
+    height: 34px;
+    display: block;
+}
+.popup__error_visible {
+    visibility: visible;
+}
+
+.popup__input_type_error {
+    border-bottom: 1px solid #f00;
+}
