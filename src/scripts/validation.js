@@ -1,84 +1,64 @@
-const inactiveButtonClass = 'popup__button_disabled';
-const inputErrorClass = 'popup__input_type_error';
-const errorClass = 'popup__error_visible';
+const validateSubmitBtn = (params, inputs, btn) => {
+    const isActiveBtn = Array.from(inputs).every((input) => input.validity.valid);
 
-// Functions
-
-const validateSubmitBtn = (params) => {
-    const isActiveBtn = params.inputsSelector.every((input) => {
-        return input.validity.valid;
-    });
-    const btn = params.formSelector.querySelector('.popup__button');
     if (isActiveBtn) {
-        btn.classList.remove(inactiveButtonClass);
+        btn.classList.remove(params.inactiveButtonClass);
         btn.removeAttribute('disabled');
     } else {
-        btn.classList.add(inactiveButtonClass);
+        btn.classList.add(params.inactiveButtonClass);
         btn.setAttribute('disabled', true);
     }
 };
 
 const showError = (input, params) => {
-    input.classList.add(inputErrorClass);
-
-    const errorSpan = params.formSelector.querySelector(`.error_type_${input.name}`);
-
-    errorSpan.classList.add(errorClass);
-    if (input.validity.patternMismatch) {
-        errorSpan.textContent = input.dataset.errorMessage;
-    } else {
-        errorSpan.textContent = input.validationMessage;
-    }
-
-    validateSubmitBtn(params);
+    input.classList.add(params.inputErrorClass);
+    const errorSpan = input.nextElementSibling;
+    errorSpan.classList.add(params.errorClass);
+    errorSpan.textContent = input.validationMessage;
 };
+
 const clearError = (input, params) => {
-    if (input.classList.contains(inputErrorClass)) {
-        input.classList.remove(inputErrorClass);
-
-        const errorSpan = params.formSelector.querySelector(`.error_type_${input.name}`);
-
-        errorSpan.classList.remove(errorClass);
-        errorSpan.textContent = '';
-    }
-    validateSubmitBtn(params);
+    input.classList.remove(params.inputErrorClass);
+    const errorSpan = input.nextElementSibling;
+    errorSpan.classList.remove(params.errorClass);
+    errorSpan.textContent = '';
 };
 
 const validateInput = (params, input) => {
-    switch (input.type) {
-        case 'text':
-            if (
-                !input.validity.valid ||
-                input.validity.tooLong ||
-                input.validity.tooShort ||
-                input.validity.patternMismatch
-            ) {
-                showError(input, params);
-                break;
-            } else {
-                clearError(input, params);
-                break;
-            }
-        case 'url':
-            if (!input.validity.valid || input.validity.patternMismatch) {
-                showError(input, params);
-                break;
-            } else {
-                clearError(input, params);
-                break;
-            }
+    if (input.validity.patternMismatch) {
+        input.setCustomValidity(input.dataset.errorMessage);
+    } else {
+        input.setCustomValidity('');
+    }
+    if (input.validity.valid) {
+        clearError(input, params);
+    } else {
+        showError(input, params);
     }
 };
 
-export const clearValidation = (validationParams) => {
-    validationParams.inputsSelector.forEach((input) => {
+export const clearValidation = (form, validationParams) => {
+    const inputs = form.querySelectorAll(validationParams.inputSelector);
+    const submitBtn = form.querySelector(validationParams.submitButtonSelector);
+
+    inputs.forEach((input) => {
         clearError(input, validationParams);
     });
+    validateSubmitBtn(validationParams, inputs, submitBtn);
 };
-export const enableValidation = (validationParams) => {
-    validateSubmitBtn(validationParams);
 
-    validationParams.inputsSelector.forEach((input) => {
-        input.addEventListener('input', () => validateInput(validationParams, input));
+export const enableValidation = (validationParams) => {
+    const forms = document.querySelectorAll(validationParams.formSelector);
+    forms.forEach((form) => {
+        const submitBtn = form.querySelector(validationParams.submitButtonSelector);
+        const inputs = form.querySelectorAll(validationParams.inputSelector);
+
+        validateSubmitBtn(validationParams, inputs, submitBtn);
+        inputs.forEach((input) => {
+            input.addEventListener('input', () => {
+                validateInput(validationParams, input);
+                validateSubmitBtn(validationParams, inputs, submitBtn);
+            });
+        });
     });
 };

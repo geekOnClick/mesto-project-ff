@@ -84,9 +84,7 @@
                             type="url"
                             name="link"
                             class="popup__input popup__input_type_link"
-                            pattern="https?://.+"
                             placeholder="Ссылка на картинку"
-                            data-error-message="Введите URL"
                             required />
                         <span class="form__input-error error_type_link"></span>
                         <button type="submit" class="button popup__button">Сохранить</button>
@@ -100,7 +98,7 @@
                     <p class="popup__caption"></p>
                 </div>
             </div>
-            <div class="popup popup_type_avatar">
+            <div class="popup popup_type_avatar popup_is-animated">
                 <div class="popup__content">
                     <button type="button" class="popup__close"></button>
                     <h3 class="popup__title">Обновить аватар</h3>
@@ -119,7 +117,7 @@
                     </form>
                 </div>
             </div>
-            <div class="popup popup_type_delete-card">
+            <div class="popup popup_type_delete-card popup_is-animated">
                 <div class="popup__content">
                     <button type="button" class="popup__close"></button>
                     <h3 class="popup__title">Вы уверены?</h3>
